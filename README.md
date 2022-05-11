@@ -1,7 +1,3 @@
-#Qualquer coisa
+#Repositório criado para o curso Java GFT DIO
 
-##Aprendedo a usar o git
- - readme
-
-**oi**
-
+##Primeira tarefa: criar um repositório para o curso e colocar anotações sobre como usar o Git/GitHub
