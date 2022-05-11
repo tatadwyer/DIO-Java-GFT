@@ -1,0 +1,188 @@
+download git: seguir instruções
+https://git-scm.com/downloads
+
+SHA1: a sigla SHA significa Secure Hash Algorithm, e é um conjunto de funções hash criptográficas projetadas pela NSA. 
+A encriptação gera um conjunto de caracteres identificadores de 40 digitos. É uma forma curta de representar um arquivo.
+
+echo "ola mundo" | openssl sha1 : gera codigo identificador
+
+openssl sha1 nomedoarquivo.txt: gera codigo identificador
+
+**Blobs**
+
+echo 'conteudo' | git hash-object --stdin: gera codigo identificador
+echo -e 'conteudo' | openssl sha1: gera codigo identificador diferente do primeiro
+
+Arquivos ficam guardados em Blob, que contém metadados:
+
+Blob
+\0
+Ola mundo
+
+echo -e 'blob 9\0conteudo' | openssl sha1: gera mesmo sodigo identificador que o primeiro (contém metadados)
+
+**Trees**
+
+Armazena e aponta para Blobs (e seus SHA1), também contém metadados, guarda nome do arquivo, monta estrutura de onde estão arquivos.
+Pode apontar para outras Trees, tem seu próprio SHA1. Ao mudar um arquivo, mudo toda a estrutura da arvore.
+
+Tree
+\0
+blob  sa4d8s  texto.txt
+
+**Commits**
+
+Junta tudo, aponta para tree, parente (último commit realizado), autor, mensagem e timestap (carimbo de tempo com data e hora de criação).
+Tem SHA1, portanto, se Blob é alterado, altera SHA da arvore e gera SHA do commit. Ficam todos armazenados no histórico.
+
+**Chave SSH**
+
+Para empurrar codigos para GitHub, preciso da chave SSH:
+-chave pública: GitHub
+-chave privada: local
+
+GitHub -> Settings -> SSH and GPG keys
+
+Gitbash-> 
+ssh-keygen -t ed25519 -C meuemail@gmail.com -> gera chave -> enter (cria uma pasta para ela)
+entro na pasta: cd /c/user.../.ssh/ -> ls: consigo ver minhas duas chaves criadas
+cat id_ed25519.pub -> vai me mostrar a chave pública -> copio a chave publica e colo no GitHub (SSH keys) 
+iniciar SSH agent no bash: eval $(ssh-agent -s) -> aparece Agent pid numero
+ssh-add id_ed25519 (já estou dentro da pasta, vou validar minha chave privada)
+
+Como usar a chave SSH para clonar repositório:
+-no repositório que desejo clonar: code -> local -> SSH -> copio chave para colar no bash (repositório privado, que pediria senha)
+- git clone git@github.com:Nome/minhachave.github...
+-ls: verificar se deu certo
+
+**Token de acesso pessoal**
+
+Uso quando a maquina não é minha, deixo token em outro local.
+
+Developer settings -> Personal access tokens -> Generate new token -> posso configurar data de exiração, dou nome
+-> copiar token de acesso em local seguro porque código não fica disponivel, se perder, tem que gerar outro.
+
+Para usar:
+-repositório privado: code -> local -> HTTPS (copiar)
+-bash: git clone https://... -> enter -> pede o token (inserir, enter)
+-ls: verificar se deu certo
+
+**Iniciar o Git e criar um commit**
+
+criar pasta de trabalho, entrar nela..
+
+git init: começa a gerenciar pasta - cria um repositório oculta (se usar ls, não aparece)
+ls -a: para ver pasta oculta 
+cd .git/: entro na pasta criada pelo git
+cd ..: volto para minha pasta
+git config --global user.email "meuemail@gmail.com": configurar meu email
+git config --global user.name "meunomeusadonogithub": configurar meu nome
+
+posso criar um arquivo txt ou md no modo gráfico e salvar dentro da minha pasta de trabalho onde dei o git init
+
+git add *: move meu arquivo para o staging area
+
+git commit -m "mensagem do commit": arquivo comitado
+
+-untracked: arquivo que ainda não foi identificado
+-tracked: arquivo que já foi identificado
+-unmodified: arquivo não modificado
+-modified: arquivo modificado, porém não "salvo" (comitado)
+-staged: setado para ser comitado, após commit volta a ser unmodified
+
+git status: me mostra se tem algum arquivo modificado que precisa ser comitado e situação do meu working tree
+
+exemplo: livro-receitas -> pasta receitas
+
+mv nomedoarquivo.md ./receitas/: mover receita para dentro da pasta
+./ ..(mover desse repositório onde estou, para).. receitas/
+ls: ver se foi
+cd ..: voltar
+git status: vai mostrar que mudança do local da pasta não foi comitado, pasta aparece como deletada, pois não está mais na pasta original
+
+-preciso comitar essa mudança 
+
+git add nomedoarquivo.md receitas/: nomedapasta/
+git status: mostra que mudanças foram para o staging area
+git commit -m "mensagem do commit": arquivos comitados
+git status: mostra work tree limpa
+
+echo > README.md
+ls: mostra pasta receita e arquivo criado README.md
+git status: mostra que README.md não foi comitado
+
+-abro arquivo README.md no modo gráfico e altero
+
+git add *:pega tudo e move para staging area
+git status: mostra quem está no staging area
+git commit -m "mensagem": comita o arquivo
+git status: work tree limpa
+
+-alinhando Git com GitHub: git config --list -> mostra todas as configurações do Git
+-se necessario posso setar email e nome denovo para alinha infos do Git com GitHub
+
+git config --global --unset user.email: apaga email
+git config --global --unset user.name: apaga nome
+git config --global user.email
+git config --global user.name
+
+-se não estiverem alinhados, não é um problema, apenas aparece com nome de autor diferente quando alterado em um ou outro
+
+-criei repositório público vazio no GitHub: copio caminho de push no GitHub para usar no bash
+-apontar meu repositório local para o repositório remoto: 
+
+git remote add origin colarcaminhohttps://.. : adicionei criando um alias (origin)
+git remote -v: lista respositórios remotos
+git status: verificar se existe alguma pendencia
+git push origin master: pode pedir credenciais e envia (mostra pra onde foi)
+
+**Resolvendo conflitos de merge**
+
+-quando pessoas diferente alteram a mesma linha de codigo:
+
+ex: alterei e fiz git push origin master: recebo mensagem de ![rejected], vem com motivo e sugestão para avaliar alterações
+GitHub não força alteração nem sobreposição de código, me sugere verificar manualmente
+
+git pull origin master: puxa arquivo e me mostra nde está o problema, posso abrir os dois e comparar.
+
+-em txt vem sinalizado com ================ no local da alteração conflitante
+-faço aterações
+
+git status: mostra dois arquivos modificados
+git add *
+git commit -m "resolve confitos"
+git push origin master
+
+**Clonar repositorio alheio**
+
+Code -> copiar https:// 
+
+git clone https://copiado..
+ls: para visualizar  (no caso foi o cpython/)
+cd cpython/
+ls: não mostra pastas ocultas - não mostra repositórios git
+ls -a: para ver pastas ocultas
+git remote -v: origin https://github.com/python/cpython.git (fetch)
+               origin https://github.com/python/cpython.git (push
+               
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
