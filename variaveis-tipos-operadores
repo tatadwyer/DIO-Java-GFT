@@ -1,0 +1,35 @@
+Variavel: um espaço na memoria do computaodr, onde se pode guardar valores.
+
+4 tipos:
+- instancia: objeto
+- classe: classe
+- local: dentro de metodos
+- paramentro: na assinatura do metodo
+
+Criar variaveis iniciais no metodo "main"
+
+padrão de definição: <?visibilidade?><?modficador?>tipo nome<?=valorInicial?>
+
+*Preciso definir tipo e nome, ouros são opcionais (depende da necessidade)
+
+V: "public", "protected" e "private"
+M: "static" e "final"
+T: tipo de dado
+N: nome que é fornecido a variavel
+VI: um valor inicial, caso se deseje
+
+Convenções e regras na criação de variaveis:
+- não devem começar com números
+- embora permitido, "$" e "_" devem ser evitados
+- são case-sensitive
+- sem espaços
+- não usar palavras reservadas do Java
+
+Boas praticas:
+- sempre começar com letra minuscula
+- nomes expressivos
+- notação camelo (int quantidadeProdutos)
+- quando constante (final) maiuscula e separada por "_" (int final NUMERO TENTATIVAS = 5)
+
+
+
